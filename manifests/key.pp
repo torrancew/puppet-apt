@@ -1,5 +1,6 @@
-define apt::key::add( $key_id = $name, $key_path = '', $key_server = '' ) {
+define apt::key( $key_id = $name, $key_path = '', $key_server = '' ) {
   include apt
+  include stdlib
 
   $default_keyserver = 'keys.gnupg.net'
 

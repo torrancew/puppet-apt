@@ -31,13 +31,13 @@ resources under /etc/apt:
 ### Apt Resource Configuration
 This module provides defined the following defined types:
 
-  * apt::key::add
+  * apt::key
   * apt::key::delete
-  * apt::source::add
+  * apt::source
   * apt::source::delete
 
 Currently, they leave a bit to be desired, and the proper way to remove one 
-of these resources is to convert any reference to ::add resources into ::delete
+of these resources is to convert any reference to normal resources into ::delete
  resources. As expected, any of these resources will trigger an aptitude update.
 
 ### Usage
@@ -49,7 +49,7 @@ or via HKP keyserver retrieval (ASCII armored or not):
   1) From a local or HTTP file:
     <pre>
     node 'foo.example.com' {
-      apt::key::add {
+      apt::key {
         'example-apt-key':
           key_path => 'http://example.com/apt-key.asc',
           # key_path => '/path/to/apt-key.asc',
@@ -59,7 +59,7 @@ or via HKP keyserver retrieval (ASCII armored or not):
   2) From an HKP server:
     <pre>
     node 'bar.example.com' {
-      apt::key::add {
+      apt::key {
         'example-apt-key':
           key_id     => '00000000',
           # key_server => 'keys.gnupg.net',
@@ -69,7 +69,7 @@ or via HKP keyserver retrieval (ASCII armored or not):
     The default keyserver is keys.gnupg.net, if unspecified.
 
 #### Removing a GPG key
-Removing a keyfile is currently somewhat fragile - remove any ::add references,
+Removing a keyfile is currently somewhat fragile - remove any standard  references,
  and replace them with ::delete references. The delete resources take a single 
  argument - the ID of the key to delete. If unspecified, it will default to the 
  name of the resource.
@@ -88,7 +88,7 @@ named as ${name}.list. At a minimum, the base URL must be specified. Optionally,
  list may be specified.
   <pre>
   node 'foo.example.com' {
-    apt::source::add {
+    apt::source {
       'example-internal-repo':
         url       => 'http://apt.example.com/debian',
         release   => 'squeeze',
@@ -103,7 +103,7 @@ Default Parameter Values:
   * src_repo:  false
 
 #### Removing an Apt repository
-Much like Removing a GPG key, you must first remove any ::add references for your repo, and then create a ::delete resource with the same name value.
+Much like Removing a GPG key, you must first remove any standard references for your repo, and then create a ::delete resource with the same name value.
   <pre>
   node 'foo.example.com' {
     apt::source::delete { 'example-internal-repo': }
@@ -113,13 +113,13 @@ Much like Removing a GPG key, you must first remove any ::add references for you
 #### Putting it all together
 <pre>
 node 'foo.example.com' {
-  apt::key::add    { 'sample-key': key_path => 'http://example.com/sample-key.asc' }
-  apt::source::add {
+  apt::key    { 'sample-key': key_path => 'http://example.com/sample-key.asc' }
+  apt::source {
     'sample-repo':
       url       => 'http://repo.example.com/ubuntu',
       release   => 'lucid',
       components => [ 'main' ],
-      require   => Apt::Key::Add['sample-key'];
+      require   => Apt::Key['sample-key'];
   }
 }
 </pre>

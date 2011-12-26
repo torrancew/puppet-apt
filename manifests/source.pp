@@ -1,4 +1,4 @@
-define apt::source::add( $url, $release = $lsbdistcodename, $components = [ 'main' ], $src_repo = false ) {
+define apt::source( $url, $release = $lsbdistcodename, $components = [ 'main' ], $src_repo = false ) {
   include apt
 
   file {
