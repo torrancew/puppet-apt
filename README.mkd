@@ -1,0 +1,128 @@
+Apt Puppet Module
+=================
+
+Description
+-----------
+This module will give some degree of tight control over the GPG keys and 
+repositories used by the apt package manager.
+
+Usage
+-----
+
+### General Apt Configuration
+This module will ensure the presence and permissions of the following file 
+resources under /etc/apt:
+
+  * apt.conf
+  * apt.conf.d/
+  * preferences
+  * preferences.d/
+  * secring.gpg
+  * sources.list
+  * sources.list.d/
+  * trustdb.gpg
+  * trusted.gpg
+  * trusted.gpg.d/
+
+### Apt Resource Configuration
+This module provides defined the following defined types:
+
+  * apt::key::add
+  * apt::key::delete
+  * apt::source::add
+  * apt::source::delete
+
+Currently, they leave a bit to be desired, and the proper way to remove one 
+of these resources is to convert any reference to ::add resources into ::delete
+ resources. As expected, any of these resources will trigger an aptitude update.
+
+### Usage
+
+#### Adding a GPG key
+This module will allow you to add Apt GPG keys from local files, http paths, 
+or via HKP keyserver retrieval (ASCII armored or not):
+
+  1) From a local or HTTP file:
+    <pre>
+    node 'foo.example.com' {
+      apt::key::add {
+        'example-apt-key':
+          key_path => 'http://example.com/apt-key.asc',
+          # key_path => '/path/to/apt-key.asc',
+      }
+    }
+    </pre>
+  2) From an HKP server:
+    <pre>
+    node 'bar.example.com' {
+      apt::key::add {
+        'example-apt-key':
+          key_id     => '00000000',
+          # key_server => 'keys.gnupg.net',
+      }
+    }
+    </pre>
+    The default keyserver is keys.gnupg.net, if unspecified.
+
+#### Removing a GPG key
+Removing a keyfile is currently somewhat fragile - remove any ::add references,
+ and replace them with ::delete references. The delete resources take a single 
+ argument - the ID of the key to delete. If unspecified, it will default to the 
+ name of the resource.
+  <pre>
+  node 'foo.example.com' {
+    apt::key::delete { '00000000': }
+    # Also works:
+    # apt::key::delete { 'example-apt-key': key_id => '00000000' }
+  }
+  </pre>
+
+#### Adding an Apt repository
+This module can add apt repositories as entires under /etc/apt/sources.list.d, 
+named as ${name}.list. At a minimum, the base URL must be specified. Optionally,
+ source repositories can be enabled, and the target release and distribution 
+ list may be specified.
+  <pre>
+  node 'foo.example.com' {
+    apt::source::add {
+      'example-internal-repo':
+        url       => 'http://apt.example.com/debian',
+        release   => 'squeeze',
+        dist_list => [ 'main' ],
+        src_repo  => true;
+    }
+  </pre>
+Default Parameter Values:
+
+  * release:   value of $lsbdistrelease fact
+  * dist_list: [ 'main' ]
+  * src_repo:  false
+
+#### Removing an Apt repository
+Much like Removing a GPG key, you must first remove any ::add references for your repo, and then create a ::delete resource with the same name value.
+  <pre>
+  node 'foo.example.com' {
+    apt::source::delete { 'example-internal-repo': }
+  }
+  </pre>
+
+#### Putting it all together
+<pre>
+node 'foo.example.com' {
+  apt::key::add    { 'sample-key': key_path => 'http://example.com/sample-key.asc' }
+  apt::source::add {
+    'sample-repo':
+      url       => 'http://repo.example.com/ubuntu',
+      release   => 'lucid',
+      dist_list => [ 'main' ],
+      require   => Apt::Key::Add['sample-key'];
+  }
+}
+</pre>
+
+<pre>
+node 'bar.example.com' {
+  apt::key::delete    { 'sample-key': key_id => '00000001' }
+  apt::source::delete { 'sample-repo': }
+}
+</pre>
