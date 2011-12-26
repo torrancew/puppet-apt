@@ -1,4 +1,4 @@
-deb     <%= url -%> <%= release -%> <%= dist_list.join( ' ' ).chomp %>
+deb     <%= url -%> <%= release -%> <%= components.join( ' ' ).chomp %>
 <% if src_repo == true -%>
-deb-src <%= url -%> <%= release -%> <%= dist_list.join( ' ' ).chomp%>
+deb-src <%= url -%> <%= release -%> <%= components.join( ' ' ).chomp%>
 <% end -%>

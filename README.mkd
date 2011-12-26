@@ -92,14 +92,14 @@ named as ${name}.list. At a minimum, the base URL must be specified. Optionally,
       'example-internal-repo':
         url       => 'http://apt.example.com/debian',
         release   => 'squeeze',
-        dist_list => [ 'main' ],
+        components => [ 'main' ],
         src_repo  => true;
     }
   </pre>
 Default Parameter Values:
 
   * release:   value of $lsbdistrelease fact
-  * dist_list: [ 'main' ]
+  * components: [ 'main' ]
   * src_repo:  false
 
 #### Removing an Apt repository
@@ -118,7 +118,7 @@ node 'foo.example.com' {
     'sample-repo':
       url       => 'http://repo.example.com/ubuntu',
       release   => 'lucid',
-      dist_list => [ 'main' ],
+      components => [ 'main' ],
       require   => Apt::Key::Add['sample-key'];
   }
 }
