@@ -1,6 +1,10 @@
 Apt Puppet Module
 =================
 
+Dependencies
+------------
+puppet-stdlib module
+
 Description
 -----------
 This module will give some degree of tight control over the GPG keys and 
