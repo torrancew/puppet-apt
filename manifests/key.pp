@@ -12,7 +12,7 @@ define apt::key( $key_id = $name, $key_path = '', $key_server = '' ) {
           false => "apt-key adv --keyserver $key_server --recv-key $key_id",
         },
         unless  => "apt-key list | grep pub | perl -pi -e 's|^.*?/(\\w+).*$|\\1|' | grep -q $key_id",
-        path    => [ "/usr/local/bin", "/usr/local/sbin", "/usr/bin", "/usr/sbin", "/bin", "/sbin" ],
+        path    => [ '/usr/local/bin', '/usr/local/sbin', '/usr/bin', '/usr/sbin', '/bin', '/sbin' ],
         notify  => Exec['update package list'],
         require => File['trusted.gpg.d'];
     }
@@ -25,7 +25,7 @@ define apt::key( $key_id = $name, $key_path = '', $key_server = '' ) {
           /^http:/ => "wget -O- $key_path | apt-key add -",
           default  => "apt-key add $key_path",
         },
-        path    => [ "/usr/local/bin", "/usr/local/sbin", "/usr/bin", "/usr/sbin", "/bin", "/sbin" ],
+        path    => [ '/usr/local/bin', '/usr/local/sbin', '/usr/bin', '/usr/sbin', '/bin', '/sbin' ],
         notify  => Exec['update package list'],
         require => File['trusted.gpg.d'];
     }
