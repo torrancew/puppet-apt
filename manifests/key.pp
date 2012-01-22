@@ -22,10 +22,11 @@ define apt::key( $key_id = $name, $key_path = '', $key_server = '' ) {
     exec {
       "add ${name} apt key from file":
         command => $key_path ? {
-          /^http:/ => "wget -O- $key_path | apt-key add -",
-          default  => "apt-key add $key_path",
+          /^http:/ => "wget -O- $key_path | gpg --no-default-keyring --keyring /etc/apt/trusted.gpg.d/${name}.gpg --import -",
+          default  => "gpg --no-default-keyring --keyring /etc/apt/trusted.gpg.d/${name}.gpg --import ${key_path}",
         },
         path    => [ '/usr/local/bin', '/usr/local/sbin', '/usr/bin', '/usr/sbin', '/bin', '/sbin' ],
+        creates => "/etc/apt/trusted.gpg.d/${name}.gpg",
         notify  => Exec['update package list'],
         require => File['trusted.gpg.d'];
     }
