@@ -1,4 +1,4 @@
-define apt::pin( $glob = $name, $release = 'a=testing', $priority = '700' ) {
+define apt::pin( $glob = $name, $release = 'a=testing', $priority = '450' ) {
   file {
     "apt_pinning_${name}":
       ensure  => present,
