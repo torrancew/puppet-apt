@@ -55,11 +55,11 @@ class apt {
     'update package list':
       command     => '/usr/bin/aptitude update',
       refreshonly => true,
-      subscribe   => $package_watch_paths,
+      subscribe   => $package_watch_paths;
 
     'clean package cache':
       command     => '/usr/bin/aptitude clean',
-      refreshonly => true,
+      refreshonly => true;
   }
 }
 
