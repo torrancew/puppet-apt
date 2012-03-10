@@ -45,11 +45,17 @@ class apt {
       mode   => 0755;
   }
 
+  $package_watch_paths = [
+    File['sources.list'],
+    File['sources.list.d'],
+    File['preferences.d'],
+  ]
+
   exec {
     'update package list':
       command     => '/usr/bin/aptitude update',
       refreshonly => true,
-      subscribe   => [ File['sources.list'], File['sources.list.d'] ];
+      subscribe   => $package_watch_paths,
 
     'clean package cache':
       command     => '/usr/bin/aptitude clean',
