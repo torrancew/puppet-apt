@@ -1,4 +1,6 @@
 define apt::pin( $glob = $title, $release = 'a=testing', $priority = '450' ) {
+  Class['apt'] -> Apt::Pin[$title] ~> Class['apt::update']
+
   file {
     "apt_pinning_${title}":
       ensure  => present,
@@ -6,8 +8,7 @@ define apt::pin( $glob = $title, $release = 'a=testing', $priority = '450' ) {
       owner   => 'root',
       group   => 'root',
       mode    => 0644,
-      content => template( 'apt/pin.erb' ),
-      notify  => Exec['update package list'],
+      content => template( 'apt/pin.erb' );
   }
 }
 

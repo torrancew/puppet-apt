@@ -16,20 +16,23 @@ class apt {
     'preferences.d':
       path   => '/etc/apt/preferences.d',
       ensure => directory,
-      mode   => 0755;
+      mode   => 0755,
+      notify => Class['apt::update'];
 
     'secring.gpg':
       path => '/etc/apt/secring.gpg',
       mode => 0600;
 
     'sources.list':
-      path => '/etc/apt/sources.list',
-      mode => 0644;
+      path   => '/etc/apt/sources.list',
+      mode   => 0644,
+      notify => Class['apt::update'];
 
     'sources.list.d':
       path   => '/etc/apt/sources.list.d',
       ensure => directory,
-      mode   => 0755;
+      mode   => 0755,
+      notify => Class['apt::update'];
 
     'trustdb.gpg':
       path => '/etc/apt/trustdb.gpg',
@@ -43,23 +46,6 @@ class apt {
       path   => '/etc/apt/trusted.gpg.d',
       ensure => directory,
       mode   => 0755;
-  }
-
-  $package_watch_paths = [
-    File['sources.list'],
-    File['sources.list.d'],
-    File['preferences.d'],
-  ]
-
-  exec {
-    'update package list':
-      command     => '/usr/bin/aptitude update',
-      refreshonly => true,
-      subscribe   => $package_watch_paths;
-
-    'clean package cache':
-      command     => '/usr/bin/aptitude clean',
-      refreshonly => true;
   }
 }
 
