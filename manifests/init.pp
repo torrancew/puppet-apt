@@ -1,4 +1,6 @@
 class apt {
+  include apt::update
+
   file {
     'apt.conf':
       path => '/etc/apt/apt.conf',
