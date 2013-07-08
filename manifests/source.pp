@@ -1,13 +1,17 @@
-define apt::source( $url, $release = $lsbdistcodename, $components = [ 'main' ], $src_repo = false ) {
-  include apt
+define apt::source(
+  $url,
+  $release    = $::lsbdistcodename,
+  $components = [ 'main' ],
+  $source     = false,
+) {
+  Class['apt'] -> Apt::Source[$title]
 
   file {
-    "${name}.list":
+    "${title}.list":
       ensure  => present,
-      path    => "/etc/apt/sources.list.d/${name}.list",
+      path    => "/etc/apt/sources.list.d/${title}.list",
       mode    => 0644,
-      content => template( 'apt/new_source.list.erb' ),
-      notify  => Exec['update package list'],
-      require => File['sources.list.d'];
+      content => template( 'apt/source.list.erb' ),
+      notify  => Exec['update package list'];
   }
 }

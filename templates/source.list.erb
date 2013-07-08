@@ -1,0 +1,5 @@
+deb     <%= @url -%> <%= @release -%> <%= @components.join( ' ' ).chomp %>
+<% if @source -%>
+deb-src <%= @url -%> <%= @release -%> <%= @components.join( ' ' ).chomp %>
+<% end -%>
+
