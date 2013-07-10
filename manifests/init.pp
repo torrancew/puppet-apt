@@ -41,13 +41,15 @@ class apt {
       mode => 0600;
 
     'trusted.gpg':
-      path => '/etc/apt/trusted.gpg',
-      mode => 0600;
+      path   => '/etc/apt/trusted.gpg',
+      mode   => 0600,
+      notify => Class['apt::update'];
 
     'trusted.gpg.d':
       path   => '/etc/apt/trusted.gpg.d',
       ensure => directory,
-      mode   => 0755;
+      mode   => 0755,
+      notify => Class['apt::update'];
   }
 }
 
