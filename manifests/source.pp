@@ -46,7 +46,7 @@ define apt::source(
   $url,
   $ensure     = present,
   $release    = $::lsbdistcodename,
-  $components = [ 'main' ],
+  $components = ['main'],
   $source     = false,
 ) {
   Class['apt'] -> Apt::Source[$title] ~> Class['apt::update']

@@ -70,10 +70,12 @@ define apt::key(
   }
 
   else {
+    $gpg_cmd = "gpg --no-default-keyring --keyring /etc/apt/trusted.gpg.d/${title}.gpg"
+
     if $ensure == 'present' {
       $key_download_cmd = $key_path ? {
-        /^http:/ => "wget -O- ${key_path} | gpg --no-default-keyring --keyring /etc/apt/trusted.gpg.d/${title}.gpg --import -",
-        default  => "gpg --no-default-keyring --keyring /etc/apt/trusted.gpg.d/${title}.gpg --import ${key_path}",
+        /^http:/ => "wget -O- ${key_path} | ${gpg_cmd} --import -",
+        default  => "${gpg_cmd} --import ${key_path}",
       }
 
       exec {
