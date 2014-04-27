@@ -49,30 +49,21 @@ define apt::key(
   $key_server = 'keys.gnupg.net'
 ) {
   Class['apt'] -> Apt::Key[$title] ~> Class['apt::update']
+  $keyring = "/etc/apt/trusted.gpg.d/${title}.gpg"
 
-  if empty( $key_path ) {
-    $key_check_cmd = "apt-key list | grep pub | perl -pi -e 's|^.*?/(\\w+).*$|\\1|' | grep -q ${key_id}"
+  if $ensure == 'present' {
+    $gpg_cmd = "gpg --no-default-keyring --keyring ${keyring}"
 
-    if $ensure == 'present' {
+    # Retrieve Key by ID
+    if empty( $key_path ) {
       exec {
         "add remote ${title} apt key":
-          command => "apt-key adv --keyserver ${key_server} --recv-key ${key_id}",
-          unless  => $key_check_cmd,
+          command => "${gpg_cmd} --keyserver ${key_server} --recv-key ${key_id}",
+          creates => $keyring;
       }
     }
+    # Import Key from File
     else {
-      exec {
-        "remove ${title} apt key":
-          command => "apt-key del ${key_id}",
-          onlyif  => $key_check_cmd,
-      }
-    }
-  }
-
-  else {
-    $gpg_cmd = "gpg --no-default-keyring --keyring /etc/apt/trusted.gpg.d/${title}.gpg"
-
-    if $ensure == 'present' {
       $key_download_cmd = $key_path ? {
         /^http:/ => "wget -O- ${key_path} | ${gpg_cmd} --import -",
         default  => "${gpg_cmd} --import ${key_path}",
@@ -81,15 +72,13 @@ define apt::key(
       exec {
         "add ${title} apt key from file":
           command => $key_download_cmd,
-          creates => "/etc/apt/trusted.gpg.d/${title}.gpg";
-      }
-    }
-    else {
-      file {
-        "/etc/apt/trusted.gpg.d/${title}.gpg":
-          ensure => absent;
+          creates => $keyring;
       }
     }
   }
 
+  # Remove Key
+  else {
+    file { $keyring: ensure => absent }
+  }
 }
